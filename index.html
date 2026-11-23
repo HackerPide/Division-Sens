@@ -1,355 +1,326 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>The Division Sensitivity Calculator</title>
-  <meta name="description" content="Convert a CS2 sensitivity to Tom Clancy's The Division.">
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg:#101214;
-      --panel:#181b1f;
-      --panel2:#20242a;
-      --text:#f2f4f5;
-      --muted:#aab1b8;
-      --border:#343a42;
-      --accent:#f0a33a;
-      --good:#81d18b;
-    }
-    html { scrollbar-gutter:stable both-edges; }
-    * { box-sizing:border-box; }
-    body {
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    }
-    main {
-      width:min(860px,calc(100% - 32px));
-      margin:40px auto;
-    }
-    h1 { margin:0 0 8px; font-size:clamp(1.8rem,4vw,2.5rem); }
-    .sub { color:var(--muted); margin:0 0 28px; }
-    .card {
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:20px;
-      margin:0 0 18px;
-    }
-    h2 { margin:0 0 16px; font-size:1.15rem; }
-    .grid {
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:14px;
-    }
-    label { display:block; color:var(--muted); font-size:.9rem; }
-    input {
-      width:100%;
-      margin-top:6px;
-      border:1px solid var(--border);
-      background:var(--panel2);
-      color:var(--text);
-      border-radius:9px;
-      padding:11px 12px;
-      font:inherit;
-    }
-    input:focus { outline:2px solid var(--accent); outline-offset:1px; }
-    input.mirrored {
-      background:#15181b;
-      color:#7f878f;
-      border-color:#2c3137;
-    }
-    input.mirrored {
-      color: var(--muted);
-      background: #171a1e;
-    }
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>The Division Sensitivity Calculator</title>
+	<meta name="description" content="Convert a CS2 sensitivity to Tom Clancy's The Division.">
+	<style>
+		:root {
+			color-scheme: dark;
+			--bg:#101214;
+			--panel:#181b1f;
+			--panel2:#20242a;
+			--text:#f2f4f5;
+			--muted:#aab1b8;
+			--border:#343a42;
+			--accent:#f0a33a;
+			--good:#81d18b;
+		}
+		html { scrollbar-gutter:stable both-edges; }
+		* { box-sizing:border-box; }
+		body {
+			margin:0;
+			background:var(--bg);
+			color:var(--text);
+			font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+		}
+		main {
+			width:min(860px,calc(100% - 32px));
+			margin:40px auto;
+		}
+		h1 { margin:0 0 8px; font-size:clamp(1.8rem,4vw,2.5rem); }
+		.sub { color:var(--muted); margin:0 0 28px; }
+		.card {
+			background:var(--panel);
+			border:1px solid var(--border);
+			border-radius:14px;
+			padding:20px;
+			margin:0 0 18px;
+		}
+		h2 { margin:0 0 16px; font-size:1.15rem; }
+		.grid {
+			display:grid;
+			grid-template-columns:repeat(2,minmax(0,1fr));
+			gap:14px;
+		}
+		label { display:block; color:var(--muted); font-size:.9rem; }
+		input {
+			width:100%;
+			margin-top:6px;
+			border:1px solid var(--border);
+			background:var(--panel2);
+			color:var(--text);
+			border-radius:9px;
+			padding:11px 12px;
+			font:inherit;
+		}
+		[hidden] { display:none !important; }
+		.dpi-toggle { display:flex; align-items:center; gap:9px; margin-top:16px; cursor:pointer; }
+		.dpi-toggle input { width:auto; margin:0; padding:0; accent-color:var(--accent); }
+		input:focus { outline:2px solid var(--accent); outline-offset:1px; }
 
-    /* Remove native number input spinner buttons */
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    input[type="number"] {
-      -moz-appearance: textfield;
-      appearance: textfield;
-    }
-    .results {
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-      margin-top:18px;
-    }
-    .results.single-result { grid-template-columns:1fr; }
-    .result {
-      background:var(--panel2);
-      border:1px solid var(--border);
-      border-radius:10px;
-      padding:14px;
-    }
-    .result span { display:block; color:var(--muted); font-size:.85rem; }
-    .result strong { display:block; margin-top:4px; font-size:1.25rem; word-break:break-word; }
-    .highlight strong { color:var(--good); }
-    pre {
-      margin:14px 0 0;
-      background:#0c0e10;
-      border:1px solid var(--border);
-      border-radius:10px;
-      padding:14px;
-      overflow:auto;
-      font-size:.95rem;
-    }
-    ol {
-      margin:10px 0 0;
-      padding-left:1.25rem;
-    }
-    li + li { margin-top:8px; }
-    code {
-      background:#0c0e10;
-      border:1px solid var(--border);
-      border-radius:5px;
-      padding:.1em .35em;
-    }
-    .note { color:var(--muted); font-size:.9rem; margin:12px 0 0; }
-    footer { color:var(--muted); font-size:.85rem; padding:8px 2px 30px; }
-    @media (max-width:650px) {
-      .grid,.results { grid-template-columns:1fr; }
-      main { margin-top:24px; }
-    }
-  
-    details.card { padding:0; }
-    details.card summary {
-      cursor:pointer;
-      list-style:none;
-      padding:20px;
-      font-size:1.15rem;
-      font-weight:700;
-      user-select:none;
-    }
-    details.card summary::-webkit-details-marker { display:none; }
-    details.card summary::after {
-      content:"＋";
-      float:right;
-      color:var(--muted);
-      font-weight:400;
-    }
-    details.card[open] summary::after { content:"−"; }
-    details.card[open] summary { border-bottom:1px solid var(--border); }
-    .details-body { padding:0 20px 20px; }
-    .details-body p:last-child { margin-bottom:0; }
-
-  </style>
+		/* Remove native number input spinner buttons */
+		input[type="number"]::-webkit-inner-spin-button,
+		input[type="number"]::-webkit-outer-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+		input[type="number"] {
+			-moz-appearance: textfield;
+			appearance: textfield;
+		}
+		.result {
+			padding:11px 12px;
+		}
+		.result strong {
+			margin-top:6px;
+			color:var(--good);
+			display: block;
+		}
+		pre {
+			margin:14px 0 0;
+			background:#0c0e10;
+			border:1px solid var(--border);
+			border-radius:10px;
+			padding:14px;
+			overflow:auto;
+			font-size:.95rem;
+		}
+		ol {
+			margin:10px 0 0;
+			padding-left:1.25rem;
+		}
+		li + li { margin-top:8px; }
+		code {
+			background:#0c0e10;
+			border:1px solid var(--border);
+			border-radius:5px;
+			padding:.1em .35em;
+		}
+		@media (max-width:650px) {
+			.grid { grid-template-columns:1fr; }
+			main { margin-top:24px; }
+		}
+		details.card { padding:0; }
+		details.card summary {
+			cursor:pointer;
+			list-style:none;
+			padding:20px;
+			font-size:1.15rem;
+			font-weight:700;
+			user-select:none;
+		}
+		details.card summary::-webkit-details-marker { display:none; }
+		details.card summary::after {
+			content:"＋";
+			float:right;
+			color:var(--muted);
+			font-weight:400;
+		}
+		details.card[open] summary::after { content:"-"; }
+		details.card[open] summary { border-bottom:1px solid var(--border); }
+		.details-body { padding:0 20px 20px; }
+		.details-body p:last-child { margin-bottom:0; }
+	</style>
 </head>
 <body>
 <main>
-  <h1>The Division Sensitivity Calculator</h1>
-  <p class="sub">Convert a CS2 sensitivity to Tom Clancy's The Division using the measured Division engine coefficient.</p>
+	<h1>The Division Sensitivity Calculator</h1>
+	<p class="sub">Convert a CS2 sensitivity to Tom Clancy's The Division.</p>
 
-  <section class="card">
-    <h2>Source</h2>
-    <div class="grid">
-      <label>
-        CS2 sensitivity
-        <input autocomplete="off" id="sourceSens" type="number" step="any">
-      </label>
-      <label>
-        DPI
-        <input autocomplete="off" id="sourceDpi" type="number" step="1" min="1">
-      </label>
-    </div>
-  </section>
+	<section class="card">
+		<h2>CS2</h2>
+		<div class="grid">
+			<label>
+				Sensitivity
+				<input autocomplete="off" id="cs2Sens" type="number" step="any">
+			</label>
+			<label id="cs2DpiField" hidden>
+				DPI
+				<input autocomplete="off" id="cs2Dpi" type="number" step="1" min="1">
+			</label>
+		</div>
+		<label class="dpi-toggle">
+			<input id="customDpi" type="checkbox" autocomplete="off" aria-controls="cs2DpiField divisionDpiFields">
+			Use different DPI for each game
+		</label>
+	</section>
 
-  <section class="card">
-    <h2>The Division</h2>
-    <div class="grid">
-      <label>
-        <span id="divisionDpiHint" title="Uses source DPI by default">DPI ⓘ</span>
-        <input autocomplete="off" id="divisionDpi" class="mirrored" type="number" step="1" min="1">
-      </label>
-    </div>
+	<section class="card">
+		<h2>The Division</h2>
+		<div class="grid">
+			<div>
+				<label>
+					Sensitivity
+				</label>
+				<div class="result">
+					<strong id="divisionValue">-</strong>
+				</div>
+			</div>
+			<label id="divisionDpiFields" hidden>
+				DPI
+				<input autocomplete="off" id="divisionDpi" type="number" step="1" min="1">
+			</label>
+		</div>
 
-    <div class="results single-result">
-      <div class="result highlight">
-        <span>Division sensitivity value</span>
-        <strong id="divisionValue">—</strong>
-      </div>
-    </div>
-  </section>
-<section class="card" id="howToSetIt" hidden>
-    <h2>How to set it</h2>
-    <ol>
-      <li>Close The Division.</li>
-      <li>Open <code>Documents\My Games\Tom Clancy's The Division\state.cfg</code>.</li>
-      <li>Set <strong>both</strong> sensitivity range variables to the calculated value below:</li>
-    </ol>
+	</section>
+	<section class="card" id="howToSetIt" hidden>
+		<h2>How to set it</h2>
+		<ol>
+			<li>Close The Division.</li>
+			<li>Open <code>Documents\My Games\Tom Clancy's The Division\state.cfg</code>.</li>
+			<li>Set <strong>both</strong> sensitivity range variables to the calculated value below:</li>
+		</ol>
 
-    <pre id="configBlock">minMouseSensitivity = —
-maxMouseSensitivity = —</pre>
+		<pre id="configBlock"></pre>
 
-    <ol start="4">
-      <li>Save the file and launch the game.</li>
-    </ol>
-  </section>
+		<ol start="4">
+			<li>Save the file and launch the game.</li>
+		</ol>
+	</section>
 
-  <details class="card">
-    <summary>How the calculation works</summary>
-    <div class="details-body">
-      <p>
-        This calculator matches your physical mouse sensitivity between CS2 and Tom Clancy's The Division.
-        It does that by converting both games to the same underlying unit: camera rotation in degrees per raw mouse count.
-      </p>
+	<details class="card">
+		<summary>How the calculation works</summary>
+		<div class="details-body">
+			<p>This calculator matches your mouse sensitivity between CS2 and Tom Clancy's The Division. It does that by converting both games to the same underlying unit: camera rotation in degrees per mouse count.</p>
 
-      <p>
-        CS2 uses a default horizontal yaw coefficient of <code>0.022°</code> per mouse count for each 1.0 sensitivity unit.
-        That means a CS2 sensitivity of <code>0.5</code> produces:
-      </p>
+			<p>Rotation per mouse count is how many degrees the camera turns for each unit of movement reported by your mouse. DPI determines how many counts are reported over <code>1</code> inch.</p>
 
-      <pre>0.5 × 0.022 = 0.011° per mouse count</pre>
+			<p>CS2 uses a default horizontal yaw coefficient of <code>0.022°</code> per mouse count for each <code>1.0</code> sensitivity unit. That means a CS2 sensitivity of <code>0.5</code> produces:</p>
 
-      <p>
-        For The Division, measurements from mouse-sensitivity.com show that the game's internal sensitivity scale is linear.
-        The measured relationship is approximately:
-      </p>
+			<pre>0.5 * 0.022 = 0.011° per mouse count</pre>
 
-      <pre>Division yaw = internal sensitivity × 0.005729578</pre>
+			<p>In The Division, with the default minimum sensitivity of <code>2</code> and maximum sensitivity of <code>80</code>, yaw coefficient changes as you move the sensitivity slider (function calculated with data from mouse-sensitivity.com):</p>
 
-      <p>
-        So, when both games use the same DPI, the equivalent Division internal sensitivity is:
-      </p>
+			<p><code>R</code> is horizontal rotation in degrees per mouse count, <code>min</code> and <code>max</code> are <code>minMouseSensitivity</code> and <code>maxMouseSensitivity</code>, and <code>p</code> is the in-game slider percentage from <code>0</code> to <code>100</code>.</p>
 
-      <pre>Division sensitivity = (CS2 sensitivity × 0.022) ÷ 0.005729578</pre>
+			<pre>R = [min + (max - min) * p/100] * 0.005729578</pre>
 
-      <p>
-        For example, CS2 sensitivity <code>0.5</code> gives:
-      </p>
+			<p>When both <code>minMouseSensitivity</code> and <code>maxMouseSensitivity</code> are set to the same value <code>s</code>, yaw coefficient stays constant at <code>0.005729578</code>:</p>
 
-      <pre>(0.5 × 0.022) ÷ 0.005729578 ≈ 1.91986</pre>
+			<pre>R = s * 0.005729578</pre>
 
-      <p>
-        DPI matters because higher DPI sends more mouse counts for the same physical hand movement. If the Division DPI is
-        different from the source DPI, the calculator compensates for that difference so the same physical mouse movement
-        still produces the same camera rotation.
-      </p>
+			<p>Then, sensitivity is calculated with:</p>
 
-      <pre>Adjusted Division sensitivity =
-(CS2 sensitivity × 0.022 × Source DPI ÷ Division DPI) ÷ 0.005729578</pre>
+			<pre>Division_sensitivity = (CS2_sensitivity * 0.022)/0.005729578</pre>
 
-      <p>
-        The Division's <code>state.cfg</code> exposes <code>minMouseSensitivity</code> and
-        <code>maxMouseSensitivity</code>. Setting both of them to the calculated value forces the entire in-game sensitivity
-        range to that exact internal sensitivity, which removes slider interpolation from the setup.
-      </p>
+			<p>If Division DPI is different from CS2 DPI, we can take that into consideration.</p>
 
-      <p>
-        The calculator rounds the final config value to 5 decimal places because the game appears to rewrite sensitivity
-        values to roughly that precision in <code>state.cfg</code>.
-      </p>
-    </div>
-  </details>
+			<pre>Division_sensitivity = [(CS2_sensitivity * 0.022)/0.005729578] * CS2_DPI/Division_DPI</pre>
 
+			<p>We round the final config value to <code>5</code> decimal places because the game appears to rewrite sensitivity values to roughly that precision in <code>state.cfg</code>.</p>
+		</div>
+	</details>
 </main>
 
 <script>
 (() => {
-  const CS2_YAW = 0.022;
-  const DIVISION_COEFF = 0.00572957799;
+	const CS2_YAW = 0.022;
+	const DIVISION_COEFF = 0.00572957799;
 
-  const $ = id => document.getElementById(id);
-  let divisionDpiManuallyChanged = false;
+	function $(id) {
+		return document.getElementById(id);
+	}
 
-  function readSensitivity(input) {
-    const raw = input.value.trim();
-    if (raw === "") return null;
+	function readSensitivity(input) {
+		const raw = input.value.trim();
+		if (raw === "")
+			return null;
 
-    const value = Number(raw);
-    if (!Number.isFinite(value) || value <= 0 || value > 1000) return null;
-    return value;
-  }
+		const value = Number(raw);
+		if (!Number.isFinite(value) || value <= 0 || value > 1000)
+			return null;
+		return value;
+	}
 
-  function readDpi(input) {
-    const raw = input.value.trim();
-    if (raw === "") return null;
+	function readDpi(input) {
+		const raw = input.value.trim();
+		if (raw === "")
+			return null;
 
-    const value = Number(raw);
-    if (!Number.isFinite(value) || value < 1 || value > 100000) return null;
-    return Math.round(value);
-  }
+		const value = Number(raw);
+		if (!Number.isFinite(value) || value < 1 || value > 100000)
+			return null;
+		return Math.round(value);
+	}
 
-  function clearResult() {
-    $("howToSetIt").hidden = true;
-    $("divisionValue").textContent = "—";
-    $("configBlock").textContent =
-      "minMouseSensitivity = —\n" +
-      "maxMouseSensitivity = —";
-  }
+	function clearResult() {
+		$("howToSetIt").hidden = true;
+		$("divisionValue").textContent = "-";
+	}
 
-  function recalc() {
-    const sourceSens = readSensitivity($("sourceSens"));
-    const sourceDpi = readDpi($("sourceDpi"));
+	function recalc() {
+		const cs2Sens = readSensitivity($("cs2Sens"));
+		const customDpi = $("customDpi").checked;
 
-    if (!divisionDpiManuallyChanged) {
-      $("divisionDpi").value = sourceDpi === null ? "" : String(sourceDpi);
-    }
+		if (cs2Sens === null) {
+			clearResult();
+			return;
+		}
 
-    const divisionDpi = readDpi($("divisionDpi"));
+		const cs2Yaw = cs2Sens * CS2_YAW;
+		let divisionInternal = cs2Yaw / DIVISION_COEFF;
 
-    if (sourceSens === null || sourceDpi === null || divisionDpi === null) {
-      clearResult();
-      return;
-    }
+		if (customDpi) {
+			const cs2Dpi = readDpi($("cs2Dpi"));
+			const divisionDpi = readDpi($("divisionDpi"));
 
-    const sourceYaw = sourceSens * CS2_YAW;
-    const targetDivisionYaw = sourceYaw * (sourceDpi / divisionDpi);
-    const divisionInternal = targetDivisionYaw / DIVISION_COEFF;
+			if (cs2Dpi === null || divisionDpi === null) {
+				clearResult();
+				return;
+			}
 
-    if (!Number.isFinite(divisionInternal) || divisionInternal <= 0) {
-      clearResult();
-      return;
-    }
+			divisionInternal *= cs2Dpi / divisionDpi;
+		}
 
-    $("howToSetIt").hidden = false;
-    const configValue = divisionInternal.toFixed(5);
-    $("divisionValue").textContent = configValue;
-    $("configBlock").textContent =
-      "minMouseSensitivity = " + configValue + "\n" +
-      "maxMouseSensitivity = " + configValue;
-  }
+		if (!Number.isFinite(divisionInternal) || divisionInternal <= 0) {
+			clearResult();
+			return;
+		}
 
-  function sanitizeOnBlur(input, type) {
-    input.addEventListener("blur", () => {
-      if (input.value.trim() === "") return;
+		$("howToSetIt").hidden = false;
+		const configValue = divisionInternal.toFixed(5);
+		$("divisionValue").textContent = configValue;
+		$("configBlock").textContent =
+			"maxMouseSensitivity = " + configValue + "\n" +
+			"minMouseSensitivity = " + configValue;
+	}
 
-      const value = type === "dpi" ? readDpi(input) : readSensitivity(input);
-      if (value === null) {
-        input.value = "";
-      } else {
-        input.value = String(value);
-      }
+	function sanitizeOnBlur(input, type) {
+		input.addEventListener("blur", () => {
+			if (input.value.trim() === "")
+				return;
 
-      recalc();
-    });
-  }
+			const dpiOrSensValue = type === "dpi"
+				? readDpi(input)
+				: readSensitivity(input);
+			input.value = dpiOrSensValue === null 
+				? "" 
+				: String(dpiOrSensValue);
 
-  $("sourceSens").addEventListener("input", recalc);
-  $("sourceDpi").addEventListener("input", recalc);
+			recalc();
+		});
+	}
 
-  $("divisionDpi").addEventListener("input", () => {
-    divisionDpiManuallyChanged = true;
-    $("divisionDpi").classList.remove("mirrored");
-    recalc();
-  });
+	function updateDpiVisibility() {
+		const enabled = $("customDpi").checked;
+		for (const id of ["cs2DpiField", "divisionDpiFields"]) {
+			$(id).hidden = !enabled;
+		}
+		$("cs2Dpi").disabled = !enabled;
+		$("divisionDpi").disabled = !enabled;
+		recalc();
+	}
 
-  sanitizeOnBlur($("sourceSens"), "sens");
-  sanitizeOnBlur($("sourceDpi"), "dpi");
-  sanitizeOnBlur($("divisionDpi"), "dpi");
+	$("customDpi").addEventListener("change", updateDpiVisibility);
+	$("cs2Sens").addEventListener("input", recalc);
+	$("cs2Dpi").addEventListener("input", recalc);
+	$("divisionDpi").addEventListener("input", recalc);
 
-  // Force an empty initial state; no fallback/default values are injected.
-  $("sourceSens").value = "";
-  $("sourceDpi").value = "";
-  $("divisionDpi").value = "";
-  clearResult();
+	sanitizeOnBlur($("cs2Sens"), "sens");
+	sanitizeOnBlur($("cs2Dpi"), "dpi");
+	sanitizeOnBlur($("divisionDpi"), "dpi");
 })();
 </script>
 </body>
